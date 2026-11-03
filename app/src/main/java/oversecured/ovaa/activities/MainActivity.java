@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getWindow().getDecorView().getRootView().setFilterTouchesWhenObscured(true);
 
         loginUtils = LoginUtils.getInstance(this);
         findViewById(R.id.fileTheftButton).setOnClickListener(new View.OnClickListener() {
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent("oversecured.ovaa.action.UNPROTECTED_CREDENTIALS_DATA");
+                i.setPackage(MainActivity.this.getPackageName());
                 i.putExtra("payload", MainActivity.this.loginUtils.getLoginData());
                 sendBroadcast(i);
             }

@@ -14,6 +14,7 @@ public class WebViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
+        getWindow().getDecorView().getRootView().setFilterTouchesWhenObscured(true);
 
         WebView webView = findViewById(R.id.webview);
         setupWebView(webView);
@@ -24,6 +25,6 @@ public class WebViewActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient());
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setAllowFileAccessFromFileURLs(true);
+        webView.getSettings().setAllowFileAccessFromFileURLs(false);
     }
 }
