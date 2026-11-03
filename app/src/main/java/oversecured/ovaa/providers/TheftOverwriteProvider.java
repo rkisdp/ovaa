@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class TheftOverwriteProvider extends ContentProvider {
     @Override
@@ -45,7 +46,21 @@ public class TheftOverwriteProvider extends ContentProvider {
 
     @Override
     public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode) throws FileNotFoundException {
-        File file = new File(Environment.getExternalStorageDirectory(), uri.getLastPathSegment());
-        return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_WRITE);
+        File baseDir = Environment.getExternalStorageDirectory();
+        String segment = uri.getLastPathSegment();
+        if (segment == null) {
+            throw new IllegalArgumentException("Missing path segment");
+        }
+        File requested = new File(baseDir, segment);
+        try {
+            String baseCanonical = baseDir.getCanonicalPath();
+            String requestedCanonical = requested.getCanonicalPath();
+            if (!requestedCanonical.startsWith(baseCanonical + File.separator)) {
+                throw new SecurityException("Path traversal attempt blocked: " + uri);
+            }
+        } catch (IOException e) {
+            throw new SecurityException("Failed to resolve canonical path", e);
+        }
+        return ParcelFileDescriptor.open(requested, ParcelFileDescriptor.MODE_READ_WRITE);
     }
 }
